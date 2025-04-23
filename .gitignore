@@ -1,0 +1,46 @@
+# Entornos virtuales
+venv/
+.env/
+.venv/
+
+# Archivos temporales de Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Archivos temporales de Jupyter
+.ipynb_checkpoints/
+
+# Archivos de logs y cache
+*.log
+*.tmp
+*.bak
+.cache/
+*.DS_Store
+
+# Archivos grandes que no deben subirse
+*.pt
+*.h5
+*.pth
+*.onnx
+*.ckpt
+
+# Carpeta de datos basura o pruebas
+junk/
+
+# Datasets y resultados pesados (revisar si querés subir alguno específico)
+data/raw/
+data/processed/
+data/train/
+data/labels/
+models/
+results/
+
+# Configs personales
+*.vscode/
+.idea/
+
+# Archivos comprimidos
+*.zip
+*.tar.gz
+*.rar
