@@ -35,6 +35,7 @@ data/train/
 data/labels/
 models/
 results/
+temp/
 
 # Configs personales
 *.vscode/
