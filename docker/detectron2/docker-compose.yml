@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  layout-api:
+    build:
+      context: ../..
+      dockerfile: docker/detectron2/Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+    image: layout-api:v0
+    container_name: layout-api
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    shm_size: "8gb"
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../../src:/home/appuser/src
+      - ../../templates:/home/appuser/templates
+      - ../../temp:/home/appuser/temp
+      - ../../models:/home/appuser/models
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - FVCORE_CACHE=/home/appuser/models
+    command: uvicorn app_layoutparser:app --host 0.0.0.0 --port 8000
+
+

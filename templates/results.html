@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Resultados - LayoutParser</title>
+</head>
+<body>
+  <h1>Resultados para {{ input_file }}</h1>
+
+  <h2>Imagen con bounding boxes</h2>
+  <img src="{{ boxed_image }}" alt="Imagen con boxes" style="max-width:800px; border:1px solid #444;">
+
+  <h2>Recortes detectados</h2>
+  <ul>
+    {% for recorte in recortes %}
+      <li>
+        <a href="{{ recortes_dir }}/{{ recorte }}" target="_blank">{{ recorte }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <h2>Metadatos JSON</h2>
+  <pre>{{ results | tojson(indent=2) }}</pre>
+
+  <p><a href="/">← Subir otra imagen</a></p>
+</body>
+</html>
