@@ -665,7 +665,32 @@ def build_grid_with_spans(
                     continue
                 grid[rr][cc]["covered"] = True
                 grid[rr][cc]["text"] = ""
+    
+    # 6) Ajuste estructural por "table projected row header":
+    #     Cada detección de este tipo representa una fila de subtítulo que abarca
+    #     toda la tabla horizontalmente (una única celda con colspan = n_cols).
+    projected_hdrs = [
+        d["bbox"] for d in detections if d.get("label") == "table projected row header"
+    ]
 
+    for bbox in projected_hdrs:
+        # identificar qué fila cubre la proyección
+        r_idx = covered_indices(bbox, rows, axis=1, overlap_th=overlap_th)
+        if not r_idx:
+            continue
+
+        # se toma la primera fila cubierta como la fila de subtítulo
+        r = r_idx[0]
+
+        # convertir esa fila en una única celda que abarca todas las columnas
+        grid[r][0]["colspan"] = n_cols
+        grid[r][0]["text"] = grid[r][0].get("text", "") or f"Subheader{r}"
+
+        # marcar el resto de las celdas de esa fila como cubiertas
+        for c in range(1, n_cols):
+            grid[r][c]["covered"] = True
+            grid[r][c]["text"] = ""
+                
     return {
         "grid": grid,
         "n_rows": n_rows,
@@ -677,6 +702,7 @@ def build_grid_with_spans(
         "cols_boxes": cols,
     }
 
+    
 
 def to_html(grid_pack: Dict[str, Any]) -> str:
     """Render a merged-cell grid into faithful HTML (<table>) output.
