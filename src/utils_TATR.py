@@ -854,7 +854,7 @@ def ocr_crop(
         return ""
 
     crop = image_bgr[y1:y2, x1:x2]
-    txt = pytesseract.image_to_string(crop, config=tess_cfg)
+    txt = pytesseract.image_to_string(crop,lang="spa+eng", config=tess_cfg)
     return normalize_ocr_text(txt)
 
 
