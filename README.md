@@ -6,7 +6,7 @@ Este proyecto forma parte del trabajo final de la Especialización en Inteligenc
 
 ## 🎯 Objetivo
 
-Desarrollar un sistema capaz de detectar la estructura lógica de documentos científicos escaneados —segmentando bloques como texto, tablas, figuras, listas y títulos— y aplicar motores de OCR específicos según el tipo de contenido identificado. El proyecto también contempla la evaluación comparativa de distintos motores OCR para determinar cuál ofrece el mejor desempeño en cada tipo de estructura textual.
+Desarrollar un sistema capaz de detectar la estructura lógica de imágenes documentos científicos —segmentando bloques como texto, tablas, figuras, listas y títulos— y aplicar motores de OCR específicos según el tipo de contenido identificado. El proyecto también contempla la evaluación comparativa de distintos motores OCR para determinar cuál ofrece el mejor desempeño en cada tipo de estructura textual.
 
 ---
 
@@ -27,7 +27,9 @@ tesis-digitalizacion-libros-ia/
 ├── src/                # Código fuente modular
 ├── notebooks/          # Notebooks de experimentación
 ├── results/            # Resultados y visualizaciones
-├── docs/               # Documentación de tesis
+├── docker/             # Docker para levantar LayoutParser
+├── templates/          # Templates para la API de LayoutParser
+├── temp/               # Resultados temporales
 └── README.md           # Este archivo
 ```
 
@@ -36,30 +38,39 @@ tesis-digitalizacion-libros-ia/
 
 - [x] Dataset base organizado y documentado.
 - [x] Ground truth de texto generado (300 regiones).
-- [ ] Integración completa del OCR adaptativo.
-- [ ] Clasificación automática de bloques.
-- [ ] Resultados finales y visualización.
+- [x] Integración completa del OCR adaptativo.
+- [x] Clasificación automática de bloques.
+- [x] Resultados finales y visualización.
 
 ---
 
-## 🚀 Cómo Empezar (próximamente)
+## 🚀 Cómo usarlo
 
-> Requisitos mínimos: Python 3.10+, `torch`, `opencv`, `pytesseract`
+> **Requisitos mínimos:** Python 3.10+, torch, opencv, pytesseract, Docker Desktop / Docker Engine y soporte para Docker Compose.
 
-1. Clonar el repositorio:
+### 1. Clonar el repositorio
+git clone https://github.com/Mauro-Aguirregaray/DigitalizacionLibrosCientificos
+cd DigitalizacionLibrosCientificos
 
-```
-git clone https://github.com/tu_usuario/tesis-digitalizacion-libros-ia.git
-cd tesis-digitalizacion-libros-ia
-```
-
-2. Instalar dependencias (ejemplo con `requirements.txt`):
-
-```
+### 2. Instalar dependencias
 pip install -r requirements.txt
-```
 
-3. Ejecutar un ejemplo básico *(proximamente)*.
+### 3. Iniciar Docker Desktop
+Asegurarse de tener Docker Desktop (o Docker Engine en Linux) ejecutándose.
+
+### 4. Levantar la API de LayoutParser
+cd docker/detectron2
+docker compose build
+docker compose up
+
+### 5. Ejecutar el proceso principal
+python ./src/main.py
+(El script solicitará la ruta de una imagen.)
+
+### 6. Visualización del resultado
+El resultado se abrirá automáticamente en el navegador.
+Además, se generará en ./temp/NombreImagen/ el archivo:
+output.html
 
 ---
 
