@@ -34,7 +34,9 @@ data/processed/
 data/train/
 data/labels/
 models/
-results/
+results/*
+!results/layoutparser/
+!results/ejemplos/
 temp/
 
 # Configs personales
