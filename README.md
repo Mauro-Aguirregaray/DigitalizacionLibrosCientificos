@@ -49,28 +49,40 @@ tesis-digitalizacion-libros-ia/
 > **Requisitos mínimos:** Python 3.10+, torch, opencv, pytesseract, Docker Desktop / Docker Engine y soporte para Docker Compose.
 
 ### 1. Clonar el repositorio
+```
 git clone https://github.com/Mauro-Aguirregaray/DigitalizacionLibrosCientificos
 cd DigitalizacionLibrosCientificos
+```
 
 ### 2. Instalar dependencias
+```
 pip install -r requirements.txt
+```
 
 ### 3. Iniciar Docker Desktop
+```
 Asegurarse de tener Docker Desktop (o Docker Engine en Linux) ejecutándose.
+```
 
 ### 4. Levantar la API de LayoutParser
+```
 cd docker/detectron2
 docker compose build
 docker compose up
+```
 
 ### 5. Ejecutar el proceso principal
+```
 python ./src/main.py
 (El script solicitará la ruta de una imagen.)
+```
 
 ### 6. Visualización del resultado
+```
 El resultado se abrirá automáticamente en el navegador.
 Además, se generará en ./temp/NombreImagen/ el archivo:
 output.html
+```
 
 ---
 
