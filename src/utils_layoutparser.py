@@ -66,7 +66,7 @@ def export_layout_blocks_as_crops(
 
     print(f"\n✅ Se exportaron {len(sorted_blocks)} recortes a la carpeta '{output_dir}/'.")
 
-
+'''
 def run_layout(image_path: str):
     # Nombre base del archivo sin extensión
     base_name = os.path.splitext(os.path.basename(image_path))[0]
@@ -110,3 +110,90 @@ def run_layout(image_path: str):
 
     # Devolver resultados como JSON-friendly
     return [block.to_dict() for block in layout]
+'''
+def run_layout(image_path: str):
+    """
+    Ejecuta LayoutParser sobre una imagen.
+    Si es PNG -> la convierte a JPG sin alterar colores.
+    Usa RGB para el modelo y BGR para guardar, evitando inversión de colores.
+    """
+
+    # --------------------------------
+    # 1. Convertir PNG → JPG sin afectar colores
+    # --------------------------------
+    ext = os.path.splitext(image_path)[1].lower()
+    if ext == ".png":
+        print("🔄 Convirtiendo PNG a JPG sin modificar colores...")
+
+        img_bgr = cv2.imread(image_path, cv2.IMREAD_COLOR)  # colores crudos BGR
+        jpg_path = image_path.replace(".png", ".jpg")
+
+        cv2.imwrite(jpg_path, img_bgr, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
+        image_path = jpg_path
+
+        print(f"➡️ Imagen convertida a JPG en: {jpg_path}")
+
+    # --------------------------------
+    # 2. Nombre base y carpeta de salida
+    # --------------------------------
+    base_name = os.path.splitext(os.path.basename(image_path))[0]
+    output_dir = os.path.join(TEMP_DIR, base_name)
+    os.makedirs(output_dir, exist_ok=True)
+
+    # --------------------------------
+    # 3. Leer imagen original en BGR (sin tocar colores)
+    # --------------------------------
+    image_bgr = cv2.imread(image_path, cv2.IMREAD_COLOR)
+
+    # --------------------------------
+    # 4. Convertir a RGB SOLO para LayoutParser
+    # --------------------------------
+    image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+
+    # --------------------------------
+    # 5. Cargar modelo LayoutParser
+    # --------------------------------
+    model = Detectron2LayoutModel(
+        'lp://PubLayNet/mask_rcnn_X_101_32x8d_FPN_3x/config',
+        extra_config=["MODEL.ROI_HEADS.SCORE_THRESH_TEST", 0.5],
+        label_map={0: "text", 1: "title", 2: "list", 3: "table", 4: "figure"},
+    )
+
+    # --------------------------------
+    # 6. Detectar layout (usar RGB!)
+    # --------------------------------
+    layout = model.detect(image_rgb)
+
+    # --------------------------------
+    # 7. Dibujar cajas (LayoutParser siempre trabaja en RGB)
+    # --------------------------------
+    boxed_rgb = lp.draw_box(image_rgb, layout, box_width=3)
+
+    # Asegurar numpy array (lp puede devolver PIL.Image)
+    if not isinstance(boxed_rgb, np.ndarray):
+        boxed_rgb = np.array(boxed_rgb)
+
+    # Convertir de RGB → BGR antes de guardar (colores exactos)
+    # boxed_bgr = cv2.cvtColor(boxed_rgb, cv2.COLOR_RGB2BGR)
+
+    boxed_path = os.path.join(output_dir, f"{base_name}_boxed.jpg")
+    cv2.imwrite(boxed_path, boxed_rgb)
+    print(f"📦 Guardada imagen con boxes en {boxed_path}")
+
+    # --------------------------------
+    # 8. Guardar recortes (usar imagen BGR original)
+    # --------------------------------
+    recortes_dir = os.path.join(output_dir, "recortes")
+    export_layout_blocks_as_crops(
+        image=image_rgb,
+        layout=layout,
+        output_dir=recortes_dir,
+        padding=5,
+    )
+
+    # --------------------------------
+    # 9. Devolver resultado JSON-friendly
+    # --------------------------------
+    return [block.to_dict() for block in layout]
+
+
